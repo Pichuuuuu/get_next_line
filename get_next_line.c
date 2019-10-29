@@ -6,7 +6,7 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:20:38 by tamather          #+#    #+#             */
-/*   Updated: 2019/10/29 05:36:56 by tamather         ###   ########.fr       */
+/*   Updated: 2019/10/29 05:55:39 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,23 +60,15 @@ int get_next_line(int fd, char **line)
 
 	if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
 		return (0);
-	if(tmp)
-		tmp = check_tmp(tmp);
-	else if((size = read(fd, buff, BUFFER_SIZE)) < 0)
+	tmp = check_tmp(tmp);
+	if((size = read(fd, buff, BUFFER_SIZE)) < 0)
 		return(size);
-	else if (size == 0 && tmp)
-	{
-		printf("%s        ", tmp);
-		*line = check_tmp(tmp);
-		free(tmp);
-	}
 	while(size > 0)
 	{
 		if(ft_strchr(buff, '\n') || !buff[0])
 		{
 			out = ft_strjoin(tmp, endline(buff));
 			tmp = buff;
-			free(buff);
 			*line = out;
 			return(1);
 		}
@@ -89,6 +81,7 @@ int get_next_line(int fd, char **line)
 		}
 	}
 	free(buff);
+	*line = tmp;
 	return(0);
 }
 
