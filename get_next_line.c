@@ -6,7 +6,7 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:20:38 by tamather          #+#    #+#             */
-/*   Updated: 2019/10/28 06:04:18 by tamather         ###   ########.fr       */
+/*   Updated: 2019/10/29 05:36:56 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,45 +16,93 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-char *is_end_line(char *s)
+char *endline(char *buff)
 {
 	int i;
-
+	char *cpy;
+	
 	i = 0;
-	while (s[i])
-	{
-		if(s[i] == '\n')
-			return(s + i);
+	cpy = buff;
+	while(cpy[i] != '\n' && cpy[i])
 		i++;
-	}
-	return (0);
+	cpy[i] = '\0';
+	return(buff);
 }
 
+char *check_tmp(char *tmp)
+{
+	int i;
+	char *out;
+
+	i = 0;
+	if(ft_strchr(tmp, '\n'))
+	{
+		out = ft_strjoin("", ft_strchr(tmp, '\n'));
+		free(tmp);
+		return (out);
+	}
+	else if (tmp)
+	{
+		out = ft_strjoin("", tmp);
+		return (out);
+	}
+	else
+		return ("");
+	
+}
 
 int get_next_line(int fd, char **line)
 {
 	int size;
-	static char *tmp = 0;
+	static char *tmp = "";
 	char *out;
 	char *buff;
 
-	out = "";
-	if((*line = malloc(sizeof(char) * BUFFER_SIZE + 1)))
+	if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
 		return (0);
-	size = read(fd, buff, BUFFER_SIZE);
-	printf("%s", buff);
-	*line = ft_strjoin(out, buff);
-	
-	
+	if(tmp)
+		tmp = check_tmp(tmp);
+	else if((size = read(fd, buff, BUFFER_SIZE)) < 0)
+		return(size);
+	else if (size == 0 && tmp)
+	{
+		printf("%s        ", tmp);
+		*line = check_tmp(tmp);
+		free(tmp);
+	}
+	while(size > 0)
+	{
+		if(ft_strchr(buff, '\n') || !buff[0])
+		{
+			out = ft_strjoin(tmp, endline(buff));
+			tmp = buff;
+			free(buff);
+			*line = out;
+			return(1);
+		}
+		else
+		{
+			out = ft_strjoin(tmp, buff);
+			tmp = out;
+			if((size = read(fd, buff, BUFFER_SIZE)) < 0)
+				return(size);
+		}
+	}
+	free(buff);
 	return(0);
 }
 
 int main(int argc, char const *argv[])
 {
 	char *line;
-	
+	int i;
+
 	int fd = open("test", O_RDONLY);
-	get_next_line(fd, &line);
-	printf("%s", line);
-	return 0;
+	while((i = get_next_line(fd, &line)))
+	{
+		printf("%d %s\n", i, line);
+	}
+	printf("%d %s\n", i, line);
+	free(line);
+	return (0);
 }

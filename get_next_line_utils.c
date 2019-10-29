@@ -6,11 +6,24 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:21:44 by tamather          #+#    #+#             */
-/*   Updated: 2019/10/27 20:21:19 by tamather         ###   ########.fr       */
+/*   Updated: 2019/10/29 02:10:40 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s)
+	{
+		if (*s == c)
+			return ((char*)s);
+		s++;
+	}
+	if (c == '\0')
+		return ((char*)s);
+	return (0);
+}
 
 size_t	ft_strlen(const char *str)
 {
