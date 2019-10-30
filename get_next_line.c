@@ -6,7 +6,7 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:20:38 by tamather          #+#    #+#             */
-/*   Updated: 2019/10/29 05:55:39 by tamather         ###   ########.fr       */
+/*   Updated: 2019/10/30 06:03:01 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,72 +16,52 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-char *endline(char *buff)
+int end_line(char **buff, char **line)
 {
 	int i;
-	char *cpy;
-	
+
 	i = 0;
-	cpy = buff;
-	while(cpy[i] != '\n' && cpy[i])
+	while(*buff[i] != '\n' && *buff[i])
 		i++;
-	cpy[i] = '\0';
-	return(buff);
+	*buff[i] = '\0';
+	*line = ft_strjoin("", *buff);
+	free(*buff);
+	return(1);
 }
 
-char *check_tmp(char *tmp)
+int read_to_endline(int fd, char **line)
 {
-	int i;
+	char buff[BUFFER_SIZE];
 	char *out;
+	int size;
 
-	i = 0;
-	if(ft_strchr(tmp, '\n'))
+	size = 1;
+	line = 0;
+	while(size > 0)
 	{
-		out = ft_strjoin("", ft_strchr(tmp, '\n'));
-		free(tmp);
-		return (out);
+		if((size = read(fd, buff, BUFFER_SIZE) == -1))
+			return(-1);
+		if(ft_strchr(buff, '\n'))
+			return(end_line(&buff, &*line));
+		else if(!ft_strchr(buff, '\n'))
+		{
+			out = ft_strjoin(*line, buff);
+			if(**line)
+				free(line);
+			*line = out;
+		}
 	}
-	else if (tmp)
-	{
-		out = ft_strjoin("", tmp);
-		return (out);
-	}
-	else
-		return ("");
-	
+	return(0);
 }
 
 int get_next_line(int fd, char **line)
 {
+	static char tmp[BUFFER_SIZE];
+	char buff[BUFFER_SIZE];
 	int size;
-	static char *tmp = "";
-	char *out;
-	char *buff;
-
-	if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
-		return (0);
-	tmp = check_tmp(tmp);
-	if((size = read(fd, buff, BUFFER_SIZE)) < 0)
-		return(size);
-	while(size > 0)
-	{
-		if(ft_strchr(buff, '\n') || !buff[0])
-		{
-			out = ft_strjoin(tmp, endline(buff));
-			tmp = buff;
-			*line = out;
-			return(1);
-		}
-		else
-		{
-			out = ft_strjoin(tmp, buff);
-			tmp = out;
-			if((size = read(fd, buff, BUFFER_SIZE)) < 0)
-				return(size);
-		}
-	}
-	free(buff);
-	*line = tmp;
+	
+	if(!(line = malloc(1)))
+		return(-1);
 	return(0);
 }
 
@@ -94,6 +74,7 @@ int main(int argc, char const *argv[])
 	while((i = get_next_line(fd, &line)))
 	{
 		printf("%d %s\n", i, line);
+		free(line);
 	}
 	printf("%d %s\n", i, line);
 	free(line);
