@@ -6,7 +6,7 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:20:38 by tamather          #+#    #+#             */
-/*   Updated: 2019/11/07 07:09:19 by tamather         ###   ########.fr       */
+/*   Updated: 2019/11/07 12:57:01 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int		get_next_line(int fd, char **line)
 
 	*line = 0;
 	buff[0] = 0;
-	size = 1;
+	size = (fd != -1) ? 1 : -1;
 	while (size > 0)
 	{
 		*line = mk_line(buff, *line, &tmp);
@@ -95,5 +95,7 @@ int main(int argc, char const *argv[])
 	}
 	printf("%d ==> %s\n", i, line);
 	free(line);
+	while(1)
+		;
 	return 0;
 }
