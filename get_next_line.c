@@ -6,15 +6,11 @@
 /*   By: tamather <tamather@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/26 23:20:38 by tamather          #+#    #+#             */
-/*   Updated: 2019/11/07 12:57:01 by tamather         ###   ########.fr       */
+/*   Updated: 2019/11/19 06:40:54 by tamather         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
 
 char	*mk_line(char *buff, char *line, char **tmp)
 {
@@ -79,23 +75,4 @@ int		get_next_line(int fd, char **line)
 	}
 	free(tmp);
 	return ((!size) ? 0 : -1);
-}
-
-int main(int argc, char const *argv[])
-{
-	int fd;
-	char *line;
-	int i;
-	
-	fd = open(argv[1], O_RDONLY);
-	while((i = get_next_line(fd, &line)) > 0)
-	{
-		printf("%d ==> %s\n", i, line);
-		free(line);
-	}
-	printf("%d ==> %s\n", i, line);
-	free(line);
-	while(1)
-		;
-	return 0;
 }
